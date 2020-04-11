@@ -1,5 +1,6 @@
 flake8
 flake8-commas
+mypy
 faker
 factory-boy
 freezegun
