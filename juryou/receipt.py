@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List
 from datetime import datetime, timezone
 from decimal import Decimal
 
@@ -39,11 +39,11 @@ class Receipt:
         self.point_of_sale = point_of_sale
         self.type = type
         self.concept = concept
-        self.items: [Item] = []
-        self.number: int = None
-        self.cae: str = None
-        self.cae_expiration: datetime = None
-        self.confirmation_code: str = None
+        self.items: List[Item] = []
+        self.number: Optional[int] = None
+        self.cae: Optional[str] = None
+        self.cae_expiration: Optional[datetime] = None
+        self.confirmation_code: Optional[str] = None
 
     def commit(self):
         return self.backend.commit(self)
