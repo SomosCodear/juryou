@@ -1,3 +1,4 @@
+import io
 from typing import Optional, List
 from datetime import datetime, timezone
 from decimal import Decimal
@@ -5,6 +6,7 @@ from decimal import Decimal
 from . import backend
 from .company import Company
 from .customer import Customer
+from .printer import Printer
 
 C_INVOICE_TYPE = 11
 INVOICE_CONCEPT = 3
@@ -44,14 +46,15 @@ class Receipt:
         self.cae: Optional[str] = None
         self.cae_expiration: Optional[datetime] = None
         self.confirmation_code: Optional[str] = None
+        self.printer = Printer()
 
-    def commit(self):
+    def commit(self) -> 'Receipt':
         return self.backend.commit(self)
 
-    def generate_pdf(self):
-        pass
+    def generate_pdf(self) -> io.BufferedIOBase:
+        return self.printer.print(self)
 
-    def add_item(self, name: str, amount: int, price: Decimal):
+    def add_item(self, name: str, amount: int, price: Decimal) -> 'Receipt':
         self.items.append(
             Item(name, amount, price)
         )
@@ -59,15 +62,19 @@ class Receipt:
         return self
 
     @property
-    def total(self):
+    def total(self) -> Decimal:
         return Decimal(sum(item.total for item in self.items))
 
     @property
-    def invoice_type_letter(self):
-        if self.invoice_type == C_INVOICE_TYPE:
-            return 'C'
+    def type_letter(self) -> str:
+        type_letter = 'C'
 
-    def _generate_verification_number(self, code):
+        if self.type == C_INVOICE_TYPE:
+            type_letter = 'C'
+
+        return type_letter
+
+    def _generate_verification_number(self, code: str) -> int:
         odd = sum(int(code[index]) for index in range(1, len(code), 2)) * 3
         even = sum(int(code[index]) for index in range(0, len(code), 2))
         total = odd + even
@@ -75,7 +82,7 @@ class Receipt:
         return 10 - total % 10
 
     @property
-    def code(self):
+    def code(self) -> str:
         code = '{}{:03d}{:05d}{}{}'.format(
             self.company.cuit,
             self.type,
