@@ -25,5 +25,6 @@ setup(
         'pyopenssl',
         'weasyprint',
         'python-barcode',
+        'jinja2',
     ],
 )

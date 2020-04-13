@@ -12,6 +12,8 @@ cssselect2==0.3.0         # via cairosvg, weasyprint
 defusedxml==0.6.0         # via cairosvg
 html5lib==1.0.1           # via weasyprint
 httplib2==0.17.1          # via juryou (setup.py)
+jinja2==2.11.1            # via juryou (setup.py)
+markupsafe==1.1.1         # via jinja2
 pillow==7.1.1             # via cairosvg
 py3afipws==0.10.12        # via juryou (setup.py)
 py3simplesoap==0.1        # via juryou (setup.py)
