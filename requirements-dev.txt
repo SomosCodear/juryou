@@ -4,6 +4,7 @@
 #
 #    pip-compile requirements-dev.in
 #
+click==7.1.1              # via pip-tools
 entrypoints==0.3          # via flake8
 factory-boy==2.12.0       # via -r requirements-dev.in
 faker==4.0.2              # via -r requirements-dev.in, factory-boy
@@ -13,10 +14,11 @@ freezegun==0.3.15         # via -r requirements-dev.in
 mccabe==0.6.1             # via flake8
 mypy-extensions==0.4.3    # via mypy
 mypy==0.770               # via -r requirements-dev.in
+pip-tools==4.5.1          # via -r requirements-dev.in
 pycodestyle==2.5.0        # via flake8
 pyflakes==2.1.1           # via flake8
 python-dateutil==2.8.1    # via faker, freezegun
-six==1.14.0               # via freezegun, python-dateutil
+six==1.14.0               # via freezegun, pip-tools, python-dateutil
 text-unidecode==1.3       # via faker
 typed-ast==1.4.1          # via mypy
 typing-extensions==3.7.4.2  # via mypy
