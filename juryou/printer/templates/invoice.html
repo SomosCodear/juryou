@@ -1,5 +1,3 @@
-
-{% load barcode %}
 <html>
   <head>
     <style>
@@ -7,8 +5,7 @@
         font-family: 'Roboto';
         font-style: normal;
         font-weight: 400;
-        src: local('Roboto'), local('Roboto-Regular'), url(https://fonts.gstatic.com/s/roboto/v20/KFOmCnqEu92Fr1Mu4mxK.woff2) format('woff2');
-        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+        src: local('Roboto'), local('Roboto-Regular'), url(http://tug.ctan.org/fonts/roboto/opentype/Roboto-Regular.otf) format('otf');
       }
 
       @page {
@@ -121,7 +118,7 @@
               {{receipt.type_letter|upper}}
             </div>
             <div class="invoice-type-code">
-              COD. {{'03d'.format(receipt.type)}}
+              COD. {{'{:03d}'.format(receipt.type)}}
             </div>
           </td>
           <td class="big">
@@ -148,7 +145,7 @@
             <div>
               <b>Punto de Venta:</b> {{receipt.point_of_sale}}
               &nbsp;&nbsp;&nbsp;&nbsp;
-              <b>Comp. Nro:</b> {{'08d'.format(receipt.number)}}
+              <b>Comp. Nro:</b> {{'{:08d}'.format(receipt.number)}}
             </div>
             <div>
               <b>Fecha de emisión:</b> {{receipt.date.strftime('%d/%m/%Y')}}
@@ -162,7 +159,7 @@
             <div>
               <b>Fecha de inicio de actividades:</b>
               &nbsp;
-              {{receipt.company.start_of_operations.strftime('d/m/Y')}}
+              {{receipt.company.start_of_operations.strftime('%d/%m/%Y')}}
             </div>
           </td>
         </tr>
@@ -229,7 +226,7 @@
     <table class="footer">
       <tr>
         <td>
-          <img src="{{invoice_code.barcode}}" />
+          <img src="{{receipt.barcode}}" />
         </td>
         <td>
           <table class="totals">
