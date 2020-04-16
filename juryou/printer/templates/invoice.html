@@ -1,0 +1,265 @@
+
+{% load barcode %}
+<html>
+  <head>
+    <style>
+      @font-face {
+        font-family: 'Roboto';
+        font-style: normal;
+        font-weight: 400;
+        src: local('Roboto'), local('Roboto-Regular'), url(https://fonts.gstatic.com/s/roboto/v20/KFOmCnqEu92Fr1Mu4mxK.woff2) format('woff2');
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+      }
+
+      @page {
+        size: A4;
+        margin: 0mm;
+      }
+
+      body, html {
+        margin: 0;
+      }
+
+      table {
+        font-family: Roboto;
+        font-size: 12px;
+      }
+
+      body > table {
+        width: 100%;
+        padding: 15px;
+      }
+
+      .header, .customer {
+        border-bottom: solid 1px;
+      }
+
+      .header tr:first-child {
+        text-align: center;
+      }
+
+      .header tr:first-child td {
+        width: 42%;
+      }
+
+      .header tr:first-child td:not(:first-child):not(:last-child) {
+        width: 8%;
+      }
+
+      .header tr:last-child td {
+        vertical-align: bottom;
+        padding-top: 20px;
+      }
+
+      .big {
+        font-size: 24px;
+        font-weight: bold;
+      }
+
+      .invoice-type-code {
+        font-size: 10px;
+        font-weight: bold;
+      }
+
+      .invoice-type {
+        border: solid 1px;
+      }
+
+      .items th {
+        text-align: right;
+        padding-bottom: 10px;
+      }
+
+      .items th:first-child {
+        text-align: left;
+      }
+
+      .items td:not(:first-child) {
+        text-align: right;
+      }
+
+      .footer {
+        position: fixed;
+        bottom: 0;
+      }
+
+      .footer svg {
+        width: 85mm;
+      }
+
+      .footer text {
+        transform: translateX(5px);
+      }
+
+      .footer > tbody > tr > td:first-child {
+        text-align: center;
+      }
+
+      .footer td:last-child {
+        text-align: right;
+      }
+
+      .totals {
+        display: inline-block;
+      }
+
+      .totals td:first-child {
+        text-align: right;
+        padding-right: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <table class="header">
+      <tbody>
+        <tr>
+          <td class="big">
+            {{receipt.company.short_name}}
+          </td>
+          <td colspan="2" class="invoice-type">
+            <div class="big">
+              {{receipt.type_letter|upper}}
+            </div>
+            <div class="invoice-type-code">
+              COD. {{'03d'.format(receipt.type)}}
+            </div>
+          </td>
+          <td class="big">
+            Factura
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <div>
+              <b>Razon Social:</b> {{receipt.company.name}}
+            </div>
+            <div>
+              <b>Domicilio Comercial:</b> {{receipt.company.address}}
+            </div>
+            <div>
+              <b>Condición frente al IVA:</b> {{receipt.company.iva}}
+            </div>
+          </td>
+          <td>
+          </td>
+          <td>
+          </td>
+          <td>
+            <div>
+              <b>Punto de Venta:</b> {{receipt.point_of_sale}}
+              &nbsp;&nbsp;&nbsp;&nbsp;
+              <b>Comp. Nro:</b> {{'08d'.format(receipt.number)}}
+            </div>
+            <div>
+              <b>Fecha de emisión:</b> {{receipt.date.strftime('%d/%m/%Y')}}
+            </div>
+            <div>
+              <b>CUIT:</b> {{receipt.company.cuit}}
+            </div>
+            <div>
+              <b>Ingresos Brutos:</b> {{receipt.company.brute_income}}
+            </div>
+            <div>
+              <b>Fecha de inicio de actividades:</b>
+              &nbsp;
+              {{receipt.company.start_of_operations.strftime('d/m/Y')}}
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <table class="customer">
+      <tbody>
+        <tr>
+          <td>
+            <b>Apellido y Nombre / Razón Social:</b> {{receipt.customer.name}}
+          </td>
+          <td>
+            <b>{% if receipt.customer.identity_document_type == 80 %}CUIT{% else %}DNI{% endif %}:</b>
+            &nbsp;
+            {{receipt.customer.identity_document}}
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <b>Condición frente al IVA:</b> Consumidor Final
+          </td>
+          <td>
+            <b>Condición de Venta:</b> Contado
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <table class="items">
+      <thead>
+        <tr>
+          <th>
+            Descripción
+          </th>
+          <th>
+            Cantidad
+          </th>
+          <th>
+            Precio Unitario
+          </th>
+          <th>
+            Subtotal
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in receipt.items %}
+        <tr>
+          <td>
+            {{item.name}}
+          </td>
+          <td>
+            {{item.amount}}
+          </td>
+          <td>
+            {{item.price}}
+          </td>
+          <td>
+            {{item.total}}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <table class="footer">
+      <tr>
+        <td>
+          <img src="{{invoice_code.barcode}}" />
+        </td>
+        <td>
+          <table class="totals">
+            <tbody>
+              <tr>
+                <td>
+                  <b>Subtotal:</b>
+                </td>
+                <td>
+                  {{receipt.total}}
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <b>Total:</b>
+                </td>
+                <td>
+                  {{receipt.total}}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <br />
+          <br />
+          <br />
+          <b>CAE Nº:</b> {{receipt.cae}}
+          <br />
+          <b>Fecha de Vto. CAE:</b> {{receipt.cae_expiration.strftime('%d/%m/%Y')}}
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
