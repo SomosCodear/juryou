@@ -14,7 +14,8 @@ class AFIPBackend(BaseBackend):
     WSFEV1_DATE_FORMAT = '%Y%m%d'
 
     def __init__(
-        self, certificate: str,
+        self,
+        certificate: str,
         private_key: str,
         cuit: str,
         credentials: Optional[dict] = None,
@@ -26,10 +27,10 @@ class AFIPBackend(BaseBackend):
 
     def commit(self, receipt: 'receipt.Receipt') -> 'receipt.Receipt':
         client = self._get_client()
-        invoice_number = client.CompUltimoAutorizado(
+        invoice_number = int(client.CompUltimoAutorizado(
             receipt.type,
             receipt.point_of_sale,
-        ) + 1
+        )) + 1
 
         formatted_invoice_date = receipt.date.strftime(self.WSFEV1_DATE_FORMAT)
         formatted_total = str(utils.quantize_decimal(receipt.total))
