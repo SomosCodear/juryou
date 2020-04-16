@@ -11,7 +11,7 @@ class Customer:
     @property
     def identity_document_type(self):
         return (
-            INVOICE_NATIONAL_DOCUMENT_TYPE
+            INVOICE_CUIT_DOCUMENT_TYPE
             if len(self.identity_document) == CUIT_LENGTH
-            else INVOICE_CUIT_DOCUMENT_TYPE
+            else INVOICE_NATIONAL_DOCUMENT_TYPE
         )
