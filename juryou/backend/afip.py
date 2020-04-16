@@ -46,7 +46,6 @@ class AFIPBackend(BaseBackend):
             imp_total=formatted_total,
             imp_neto=formatted_total,
             fecha_cbte=formatted_invoice_date,
-            fecha_venc_pago=formatted_invoice_date,
         )
         client.CAESolicitar()
 

@@ -11,7 +11,7 @@ from .customer import Customer
 from .printer import Printer
 
 C_INVOICE_TYPE = 11
-INVOICE_CONCEPT = 3
+PRODUCT_INVOICE_CONCEPT = 1
 
 
 class Item:
@@ -34,7 +34,7 @@ class Receipt:
         backend: 'backend.AFIPBackend',
         date: Optional[datetime] = None,
         type: int = C_INVOICE_TYPE,
-        concept: int = INVOICE_CONCEPT,
+        concept: int = PRODUCT_INVOICE_CONCEPT,
     ):
         self.company = company
         self.customer = customer
