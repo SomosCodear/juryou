@@ -1,0 +1,23 @@
+{
+  "point_of_sale": 1,
+  "company": {
+    "name": "Comunidad de Desarrolladores de Argentina",
+    "address": "Dean Funes 68, Piso 2, Dpto H - Barrio Centro Sur, Córdoba",
+    "cuit": "30716649527",
+    "brute_income": "EXENTO",
+    "iva": "IVA Sujeto Externo",
+    "start_of_operations": "2019-10-01",
+    "short_name": "CoDeAr"
+  },
+  "customer": {
+    "identity_document": "35525905",
+    "name": "Agustin Carrasco"
+  },
+  "items": [
+    {
+      "name": "Test Item",
+      "amount": 3,
+      "price": "150.5"
+    }
+  ]
+}
