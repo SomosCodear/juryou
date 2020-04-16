@@ -1,5 +1,7 @@
 import io
-from typing import Optional, List
+import barcode
+from base64 import b64encode
+from typing import Optional, List, IO
 from datetime import datetime, timezone
 from decimal import Decimal
 
@@ -51,8 +53,8 @@ class Receipt:
     def commit(self) -> 'Receipt':
         return self.backend.commit(self)
 
-    def generate_pdf(self) -> io.BufferedIOBase:
-        return self.printer.print(self)
+    def generate_pdf(self, buffer: IO = None) -> IO:
+        return self.printer.print(self, buffer)
 
     def add_item(self, name: str, amount: int, price: Decimal) -> 'Receipt':
         self.items.append(
@@ -95,3 +97,13 @@ class Receipt:
         code += str(verification_code)
 
         return code
+
+    @property
+    def barcode(self) -> str:
+        output = io.BytesIO()
+        ITF = barcode.get_barcode_class('itf')
+        itf = ITF(self.code)
+        itf.write(output, options={'module_width': 0.16})
+        svg = output.getvalue()
+
+        return 'data:image/svg+xml;charset=utf-8;base64,' + b64encode(svg).decode('utf-8')

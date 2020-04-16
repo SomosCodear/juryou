@@ -1,3 +1,3 @@
-from printer import Printer
+from .printer import Printer
 
 __all__ = ['Printer']
