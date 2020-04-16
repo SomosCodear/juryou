@@ -2,6 +2,8 @@ import os
 import json
 import argparse
 import decimal
+from datetime import datetime
+
 import juryou
 
 parser = argparse.ArgumentParser(description='Generate a receipt')
@@ -43,7 +45,7 @@ def main():
         receipt_data['company']['cuit'],
         receipt_data['company']['brute_income'],
         receipt_data['company']['iva'],
-        receipt_data['company']['start_of_operations'],
+        datetime.strptime(receipt_data['company']['start_of_operations'], '%Y-%m-%d'),
         receipt_data['company'].get('short_name'),
     )
     customer = juryou.Customer(
@@ -62,7 +64,7 @@ def main():
 
     receipt.commit()
 
-    with open(args.credentials) as credentials_file, \
+    with open(args.credentials, '+w') as credentials_file, \
             open(args.output_file, '+wb') as output_file:
         json.dump(backend.credentials, credentials_file)
         receipt.generate_pdf(output_file)
