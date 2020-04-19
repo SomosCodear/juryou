@@ -1,0 +1,16 @@
+on:
+  push:
+    branches:
+      - master
+
+name: Production
+jobs:
+  deploy:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v1
+        with:
+          python-version: '3.7'
+      - run: python setup.py test
