@@ -1,1 +1,9 @@
+# types cache
 .mypy_cache
+
+# Setuptools distribution folder.
+/dist/
+
+# Python egg metadata, regenerated from source files by setuptools.
+/*.egg-info
+/build

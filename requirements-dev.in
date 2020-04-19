@@ -5,3 +5,4 @@ mypy
 faker
 factory-boy
 freezegun
+wheel
