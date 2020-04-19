@@ -127,7 +127,6 @@ class AfipGenerateInvoiceTestCase(TestCase):
             'imp_total': invoice_total,
             'imp_neto': invoice_total,
             'fecha_cbte': invoice_date,
-            'fecha_venc_pago': invoice_date,
         }
 
         # act

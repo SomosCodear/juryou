@@ -27,6 +27,7 @@ setup(
         'python-barcode',
         'jinja2',
     ],
+    test_suite='juryou.tests',
     entry_points={
         'console_scripts': [
             'juryou=juryou.cli:main',
