@@ -25,7 +25,7 @@ with open(path.join(here, 'requirements-test.txt'), encoding='utf-8') as require
 
 setup(
     name='juryou',
-    version='0.1.0',
+    version='0.2.0',
     description='Simple receipt generation library',
     long_description=long_description,
     long_description_content_type='text/markdown',
