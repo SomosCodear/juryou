@@ -32,6 +32,7 @@ setup(
     url='https://github.com/SomosCodear/juryou',
     author='codear',
     author_email='desarrollo@codear.org',
+    include_package_data=True,
     packages=find_packages(),
     python_requires='>=3.7',
     install_requires=install_requires,
