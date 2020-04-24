@@ -4,7 +4,9 @@ from py3afipws import wsaa, wsfev1
 from juryou import receipt, utils
 from .base import BaseBackend
 
-PRODUCTION_RESOURCE_URL = 'https://servicios1.afip.gov.ar/wsfexv1/service.asmx?WSDL'
+WSAA_PRODUCTION_URL = 'https://wsaa.afip.gov.ar/ws/services/LoginCms?wsdl'
+WSFEV1_PRODUCTION_URL = 'https://servicios1.afip.gov.ar/wsfev1/service.asmx?WSDL'
+
 
 class AFIPBackend(BaseBackend):
     TRA_TTL = 36000
@@ -61,10 +63,8 @@ class AFIPBackend(BaseBackend):
 
         return receipt
 
-    def _get_wsdl(self):
-        return PRODUCTION_RESOURCE_URL if self.production else None
-
     def _authenticate(self):
+        wsdl = WSAA_PRODUCTION_URL if self.production else None
         wsaa_client = wsaa.WSAA()
 
         if self.EXPIRATION_CACHE_KEY in self.credentials and (
@@ -80,7 +80,7 @@ class AFIPBackend(BaseBackend):
             tra = wsaa_client.CreateTRA('wsfe', ttl=self.TRA_TTL)
             cms = wsaa_client.SignTRA(tra, self.certificate, self.private_key)
 
-            wsaa_client.Conectar(wsdl=self._get_wsdl())
+            wsaa_client.Conectar(wsdl=wsdl)
             wsaa_client.LoginCMS(cms)
             self.credentials[self.TOKEN_CACHE_KEY] = wsaa_client.Token
             self.credentials[self.SIGN_CACHE_KEY] = wsaa_client.Sign
@@ -91,12 +91,13 @@ class AFIPBackend(BaseBackend):
         return self.credentials[self.TOKEN_CACHE_KEY], self.credentials[self.SIGN_CACHE_KEY]
 
     def _get_client(self):
+        wsdl = WSFEV1_PRODUCTION_URL if self.production else None
         token, sign = self._authenticate()
 
         wsfev1_client = wsfev1.WSFEv1()
         wsfev1_client.Token = token.encode('utf-8')
         wsfev1_client.Sign = sign.encode('utf-8')
         wsfev1_client.Cuit = self.cuit
-        wsfev1_client.Conectar(wsdl=self._get_wsdl())
+        wsfev1_client.Conectar(wsdl=wsdl)
 
         return wsfev1_client
