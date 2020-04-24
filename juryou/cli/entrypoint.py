@@ -19,6 +19,8 @@ parser.add_argument('--cuit', required=True,
                     help='cuit of the company used for the recipt generation')
 parser.add_argument('--credentials', required=True,
                     help='file containing the credentials/where to write the credentials')
+parser.add_argument('--production', action='store_true',
+                    help="indicates to use the production resource url")
 
 
 def main():
