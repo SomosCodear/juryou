@@ -4,6 +4,7 @@ from py3afipws import wsaa, wsfev1
 from juryou import receipt, utils
 from .base import BaseBackend
 
+PRODUCTION_RESOURCE_URL = 'https://servicios1.afip.gov.ar/wsfexv1/service.asmx?WSDL'
 
 class AFIPBackend(BaseBackend):
     TRA_TTL = 36000
@@ -19,11 +20,13 @@ class AFIPBackend(BaseBackend):
         private_key: str,
         cuit: str,
         credentials: Optional[dict] = None,
+        production: bool = False,
     ):
         self.certificate = certificate
         self.private_key = private_key
         self.cuit = cuit
         self.credentials = {**credentials} if credentials is not None else {}
+        self.production = production
 
     def commit(self, receipt: 'receipt.Receipt') -> 'receipt.Receipt':
         client = self._get_client()
@@ -58,8 +61,11 @@ class AFIPBackend(BaseBackend):
 
         return receipt
 
+    def _get_wsdl(self):
+        return PRODUCTION_RESOURCE_URL if self.production else None
+
     def _authenticate(self):
-        wsaa_client = wsaa.WSAA()
+        wsaa_client = wsaa.WSAA(wsdl=self._get_wsdl())
 
         if self.EXPIRATION_CACHE_KEY in self.credentials and (
             datetime.strptime(
@@ -87,7 +93,7 @@ class AFIPBackend(BaseBackend):
     def _get_client(self):
         token, sign = self._authenticate()
 
-        wsfev1_client = wsfev1.WSFEv1()
+        wsfev1_client = wsfev1.WSFEv1(wsdl=self._get_wsdl())
         wsfev1_client.Token = token.encode('utf-8')
         wsfev1_client.Sign = sign.encode('utf-8')
         wsfev1_client.Cuit = self.cuit
