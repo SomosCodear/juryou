@@ -39,7 +39,7 @@ def main():
     else:
         credentials = None
 
-    backend = juryou.AFIPBackend(certificate, private_key, args.cuit, credentials)
+    backend = juryou.AFIPBackend(certificate, private_key, args.cuit, credentials, args.production)
 
     company = juryou.Company(
         receipt_data['company']['name'],
