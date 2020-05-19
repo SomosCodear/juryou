@@ -67,7 +67,7 @@ class AFIPBackend(BaseBackend):
 
     def _authenticate(self):
         wsdl = WSAA_PRODUCTION_URL if self.production else None
-        wsaa_client = wsaa.WSAA(cache=self.cache)
+        wsaa_client = wsaa.WSAA()
 
         if self.EXPIRATION_CACHE_KEY in self.credentials and (
             datetime.strptime(
@@ -82,7 +82,7 @@ class AFIPBackend(BaseBackend):
             tra = wsaa_client.CreateTRA('wsfe', ttl=self.TRA_TTL)
             cms = wsaa_client.SignTRA(tra, self.certificate, self.private_key)
 
-            wsaa_client.Conectar(wsdl=wsdl)
+            wsaa_client.Conectar(wsdl=wsdl, cache=self.cache)
             wsaa_client.LoginCMS(cms)
             self.credentials[self.TOKEN_CACHE_KEY] = wsaa_client.Token
             self.credentials[self.SIGN_CACHE_KEY] = wsaa_client.Sign
@@ -96,10 +96,10 @@ class AFIPBackend(BaseBackend):
         wsdl = WSFEV1_PRODUCTION_URL if self.production else None
         token, sign = self._authenticate()
 
-        wsfev1_client = wsfev1.WSFEv1(cache=self.cache)
+        wsfev1_client = wsfev1.WSFEv1()
         wsfev1_client.Token = token.encode('utf-8')
         wsfev1_client.Sign = sign.encode('utf-8')
         wsfev1_client.Cuit = self.cuit
-        wsfev1_client.Conectar(wsdl=wsdl)
+        wsfev1_client.Conectar(wsdl=wsdl, cache=self.cache)
 
         return wsfev1_client
