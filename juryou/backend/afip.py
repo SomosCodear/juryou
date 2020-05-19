@@ -23,12 +23,14 @@ class AFIPBackend(BaseBackend):
         cuit: str,
         credentials: Optional[dict] = None,
         production: bool = False,
+        cache: Optional[str] = None,
     ):
         self.certificate = certificate
         self.private_key = private_key
         self.cuit = cuit
         self.credentials = {**credentials} if credentials is not None else {}
         self.production = production
+        self.cache = cache
 
     def commit(self, receipt: 'receipt.Receipt') -> 'receipt.Receipt':
         client = self._get_client()
@@ -65,7 +67,7 @@ class AFIPBackend(BaseBackend):
 
     def _authenticate(self):
         wsdl = WSAA_PRODUCTION_URL if self.production else None
-        wsaa_client = wsaa.WSAA()
+        wsaa_client = wsaa.WSAA(cache=self.cache)
 
         if self.EXPIRATION_CACHE_KEY in self.credentials and (
             datetime.strptime(
@@ -94,7 +96,7 @@ class AFIPBackend(BaseBackend):
         wsdl = WSFEV1_PRODUCTION_URL if self.production else None
         token, sign = self._authenticate()
 
-        wsfev1_client = wsfev1.WSFEv1()
+        wsfev1_client = wsfev1.WSFEv1(cache=self.cache)
         wsfev1_client.Token = token.encode('utf-8')
         wsfev1_client.Sign = sign.encode('utf-8')
         wsfev1_client.Cuit = self.cuit
