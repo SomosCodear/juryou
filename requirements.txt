@@ -11,7 +11,7 @@ cryptography==2.9         # via pyopenssl
 cssselect2==0.3.0         # via cairosvg, weasyprint
 defusedxml==0.6.0         # via cairosvg
 html5lib==1.0.1           # via weasyprint
-httplib2==0.17.1          # via -r requirements.in
+httplib2==0.18.0          # via -r requirements.in
 jinja2==2.11.1            # via -r requirements.in
 markupsafe==1.1.1         # via jinja2
 pillow==7.1.1             # via cairosvg
