@@ -7,6 +7,13 @@ from .base import BaseBackend
 WSAA_PRODUCTION_URL = 'https://wsaa.afip.gov.ar/ws/services/LoginCms?wsdl'
 WSFEV1_PRODUCTION_URL = 'https://servicios1.afip.gov.ar/wsfev1/service.asmx?WSDL'
 
+class MissingCustomerDataError(Exception):
+    pass
+
+
+class EmptyInvoiceError(Exception):
+    pass
+
 
 class AFIPBackend(BaseBackend):
     TRA_TTL = 36000
@@ -32,7 +39,15 @@ class AFIPBackend(BaseBackend):
         self.production = production
         self.cache = cache
 
+    def validate_receipt(self, receipt: 'receipt.Receipt') -> None:
+        if not receipt.customer.name or not receipt.customer.identity_document:
+            raise MissingCustomerDataError()
+
+        if not receipt.total:
+            raise EmptyInvoiceError()
+
     def commit(self, receipt: 'receipt.Receipt') -> 'receipt.Receipt':
+        self.validate_receipt(receipt)
         client = self._get_client()
         invoice_number = int(client.CompUltimoAutorizado(
             receipt.type,
