@@ -7,6 +7,7 @@ from .base import BaseBackend
 WSAA_PRODUCTION_URL = 'https://wsaa.afip.gov.ar/ws/services/LoginCms?wsdl'
 WSFEV1_PRODUCTION_URL = 'https://servicios1.afip.gov.ar/wsfev1/service.asmx?WSDL'
 
+
 class MissingCustomerDataError(Exception):
     pass
 
@@ -81,9 +82,6 @@ class AFIPBackend(BaseBackend):
         return receipt
 
     def _authenticate(self):
-        wsdl = WSAA_PRODUCTION_URL if self.production else None
-        wsaa_client = wsaa.WSAA()
-
         if self.EXPIRATION_CACHE_KEY in self.credentials and (
             datetime.strptime(
                 self.credentials[self.EXPIRATION_CACHE_KEY],
@@ -94,6 +92,9 @@ class AFIPBackend(BaseBackend):
 
         if self.TOKEN_CACHE_KEY not in self.credentials \
                 or self.SIGN_CACHE_KEY not in self.credentials:
+            wsdl = WSAA_PRODUCTION_URL if self.production else None
+            wsaa_client = wsaa.WSAA()
+
             tra = wsaa_client.CreateTRA('wsfe', ttl=self.TRA_TTL)
             cms = wsaa_client.SignTRA(tra, self.certificate, self.private_key)
 
