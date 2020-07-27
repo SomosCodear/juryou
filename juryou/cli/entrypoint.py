@@ -1,15 +1,17 @@
+import argparse
 import os
 import json
-import argparse
-import decimal
-from datetime import datetime
-
 import juryou
+from .generate import generate
+from .print_invoice import print_invoice
 
-parser = argparse.ArgumentParser(description='Generate a receipt')
-parser.add_argument('receipt_file',
-                    help='path to the file containing json data to generate the receipt')
-parser.add_argument('output_file',
+parser = argparse.ArgumentParser(description='Generate/Retrieve a receipt')
+group = parser.add_mutually_exclusive_group(required=True)
+group.add_argument('--receipt-file',
+                   help='path to the file containing json data to generate the receipt')
+group.add_argument('--receipt-identifier',
+                   help='identifier of a receipt to fetch')
+parser.add_argument('--output-file',
                     help='path for the output file (invoice pdf)')
 parser.add_argument('--certificate', required=True,
                     help='AFIP certificate to use for the receipt generation')
@@ -27,11 +29,9 @@ def main():
     args = parser.parse_args()
 
     with open(args.certificate, 'r') as certificate_file, \
-            open(args.private_key, 'r') as private_key_file, \
-            open(args.receipt_file, 'r') as receipt_file:
+            open(args.private_key, 'r') as private_key_file:
         certificate = certificate_file.read()
         private_key = private_key_file.read()
-        receipt_data = json.load(receipt_file)
 
     if os.path.exists(args.credentials):
         with open(args.credentials, 'r+') as credentials_file:
@@ -41,32 +41,15 @@ def main():
 
     backend = juryou.AFIPBackend(certificate, private_key, args.cuit, credentials, args.production)
 
-    company = juryou.Company(
-        receipt_data['company']['name'],
-        receipt_data['company']['address'],
-        receipt_data['company']['cuit'],
-        receipt_data['company']['brute_income'],
-        receipt_data['company']['iva'],
-        datetime.strptime(receipt_data['company']['start_of_operations'], '%Y-%m-%d'),
-        receipt_data['company'].get('short_name'),
-    )
-    customer = juryou.Customer(
-        receipt_data['customer']['identity_document'],
-        receipt_data['customer']['name'],
-    )
-    receipt = juryou.Receipt(
-        company,
-        customer,
-        receipt_data['point_of_sale'],
-        backend,
-    )
+    if args.receipt_file:
+        if args.output_file is None:
+            print('You need to provide an output file')
+        else:
+            generate(backend, args.receipt_file, args.output_file)
+    elif args.receipt_identifier:
+        print_invoice(backend, args.receipt_identifier)
+    else:
+        print('Provide either receipt and output file or a receipt identifier')
 
-    for item in receipt_data['items']:
-        receipt.add_item(item['name'], item['amount'], decimal.Decimal(item['price']))
-
-    receipt.commit()
-
-    with open(args.credentials, '+w') as credentials_file, \
-            open(args.output_file, '+wb') as output_file:
+    with open(args.credentials, '+w') as credentials_file:
         json.dump(backend.credentials, credentials_file)
-        receipt.generate_pdf(output_file)
