@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Optional
 
 
@@ -9,7 +10,7 @@ class Company:
         cuit: str,
         brute_income: str,
         iva: str,
-        start_of_operations: str,
+        start_of_operations: datetime,
         short_name: Optional[str] = None,
     ):
         self.name = name
@@ -19,3 +20,15 @@ class Company:
         self.brute_income = brute_income
         self.iva = iva
         self.start_of_operations = start_of_operations
+
+
+class DummyCompany(Company):
+    def __init__(self):
+        super().__init__(
+            'Dummy',
+            'Fake address 123',
+            '123456789',
+            'Exento',
+            'Sujeto IVA Exento',
+            datetime.now(),
+        )

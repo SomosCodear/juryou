@@ -57,9 +57,7 @@ class Receipt:
         return self.printer.print(self, buffer)
 
     def add_item(self, name: str, amount: int, price: Decimal) -> 'Receipt':
-        self.items.append(
-            Item(name, amount, price)
-        )
+        self.items.append(Item(name, amount, price))
 
         return self
 

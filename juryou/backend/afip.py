@@ -1,7 +1,7 @@
 from typing import Optional
 from datetime import datetime, timezone
 from py3afipws import wsaa, wsfev1
-from juryou import receipt, utils
+from juryou import receipt, company, customer, utils
 from .base import BaseBackend
 
 WSAA_PRODUCTION_URL = 'https://wsaa.afip.gov.ar/ws/services/LoginCms?wsdl'
@@ -13,6 +13,10 @@ class MissingCustomerDataError(Exception):
 
 
 class EmptyInvoiceError(Exception):
+    pass
+
+
+class WrongIdentifier(Exception):
     pass
 
 
@@ -81,11 +85,54 @@ class AFIPBackend(BaseBackend):
 
         return receipt
 
+    def _parse_identifier(self, identifier: str):
+        try:
+            (point_of_sale, invoice_type, invoice_number) = identifier.split(':')
+
+            return int(point_of_sale), int(invoice_type), int(invoice_number)
+        except ValueError:
+            raise WrongIdentifier(identifier)
+
+    def fetch(self, identifier: str):
+        (point_of_sale, invoice_type, invoice_number) = self._parse_identifier(identifier)
+
+        client = self._get_client()
+        client.CompConsultar(invoice_type, point_of_sale, invoice_number)
+
+        receipt_company = company.DummyCompany()
+        receipt_customer = customer.Customer(client.factura['nro_doc'], '')
+        fetched_receipt = receipt.Receipt(
+            receipt_company,
+            receipt_customer,
+            point_of_sale,
+            self,
+            datetime.strptime(client.factura['fecha_cbte'], self.WSFEV1_DATE_FORMAT),
+            client.factura['tipo_cbte'],
+            client.factura['concepto'],
+        )
+        fetched_receipt.add_item('Item', 1, client.factura['imp_total'])
+
+        return fetched_receipt
+
+    def fetch_last(self, identifier: str, count: int = 1):
+        (point_of_sale, invoice_type, _) = self._parse_identifier(identifier + ':0')
+        client = self._get_client()
+        last_invoice_number = int(client.CompUltimoAutorizado(invoice_type, point_of_sale))
+        receipts = []
+
+        for i in range(0, count):
+            invoice_id = f'{identifier}:{last_invoice_number - i}'
+            receipt = self.fetch(invoice_id)
+
+            receipts.append(receipt)
+
+        return receipt
+
     def _authenticate(self):
         if self.EXPIRATION_CACHE_KEY in self.credentials and (
             datetime.strptime(
                 self.credentials[self.EXPIRATION_CACHE_KEY],
-                self.EXPIRATION_DATE_FORMAT
+                self.EXPIRATION_DATE_FORMAT,
             ) < datetime.now(timezone.utc)
         ):
             self.credentials = {}
