@@ -61,6 +61,9 @@ class Receipt:
 
         return self
 
+    def clear_items(self):
+        self.items.clear()
+
     @property
     def total(self) -> Decimal:
         return Decimal(sum(item.total for item in self.items))
