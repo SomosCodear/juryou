@@ -111,6 +111,12 @@ class AFIPBackend(BaseBackend):
             client.factura['concepto'],
         )
         fetched_receipt.add_item('Item', 1, client.factura['imp_total'])
+        fetched_receipt.number = invoice_number
+        fetched_receipt.cae = client.factura['cae']
+        fetched_receipt.cae_expiration = datetime.strptime(
+            client.factura['fch_venc_cae'],
+            self.WSFEV1_DATE_FORMAT,
+        )
 
         return fetched_receipt
 
