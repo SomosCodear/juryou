@@ -15,14 +15,6 @@ with open(path.join(here, 'requirements.txt'), encoding='utf-8') as requirements
         if not line.startswith('#')
     ]
 
-# get test requirements from requirements-test.txt file
-with open(path.join(here, 'requirements-test.txt'), encoding='utf-8') as requirements:
-    tests_require = [
-        line.strip()
-        for line in requirements.readlines()
-        if not line.startswith('#')
-    ]
-
 setup(
     name='juryou',
     version='0.4.1',
@@ -36,8 +28,6 @@ setup(
     packages=find_packages(),
     python_requires='>=3.7',
     install_requires=install_requires,
-    test_suite='juryou.tests',
-    tests_require=tests_require,
     entry_points={
         'console_scripts': [
             'juryou=juryou.cli:main',

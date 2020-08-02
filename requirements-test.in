@@ -1,3 +1,4 @@
+tox
 faker
 factory-boy
 freezegun
