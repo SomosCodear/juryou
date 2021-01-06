@@ -5,7 +5,7 @@
 #    pip-compile requirements.in
 #
 cairocffi==1.1.0          # via cairosvg, weasyprint
-cairosvg==2.4.2           # via weasyprint
+cairosvg==2.5.1           # via weasyprint
 cffi==1.14.1              # via cairocffi, cryptography, weasyprint
 cryptography==3.0         # via pyopenssl
 cssselect2==0.3.0         # via cairosvg, weasyprint
