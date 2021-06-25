@@ -37,7 +37,7 @@ pillow==8.2.0
     #   weasyprint
 py3afipws==0.10.25
     # via -r requirements.in
-py3simplesoap==0.10.18
+py3simplesoap==0.1
     # via -r requirements.in
 pycparser==2.20
     # via cffi

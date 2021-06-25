@@ -17,7 +17,7 @@ with open(path.join(here, 'requirements.txt'), encoding='utf-8') as requirements
 
 setup(
     name='juryou',
-    version='0.6.0',
+    version='0.6.1',
     description='Simple receipt generation library',
     long_description=long_description,
     long_description_content_type='text/markdown',

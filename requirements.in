@@ -1,6 +1,6 @@
 py3afipws
 httplib2
-py3simplesoap
+py3simplesoap<=0.1
 pyopenssl
 weasyprint
 python-barcode
