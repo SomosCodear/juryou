@@ -31,7 +31,7 @@ jinja2==3.0.1
     # via -r requirements.in
 markupsafe==2.0.1
     # via jinja2
-pillow==8.2.0
+pillow==9.0.0
     # via
     #   cairosvg
     #   weasyprint
